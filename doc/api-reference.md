@@ -1,43 +1,9 @@
 Image Photo-Z
 =============
+___
 
-_Pixel-level estimation of photometric redshifts for astronomical images._
-
-## Authors
-Alankar Kotwal  
-Matias Carrasco-Kind  
-Robert J. Brunner
-
-####Requirements:
-* A computer running a Debian-like operating system, preferably Ubuntu 12.04 or higher.
-* Python support and administrator access
-* Software dependencies:
-  * Python2.7 or higher (installed with the python-dev package)
-  * Numpy
-  * Astropy
-  * Montage Image Mosaic Software for Astronomers
-  * montage_wrapper package for Python
-  * MLZ from LCDM and its dependencies
-  * Scikit-Learn
-
-####Usage Instructions:
-Write something here
-
-####Install Instructions:  
-The setup-* scripts take care of the installation of the package.  
-Install dependencies first by running the setup-deps script this way:
-
-    cd <package path> 
-    sudo chmod +x setup-deps.sh
-    ./setup-deps.sh
-
-Install the package by running
-
-    sudo chmod +x setup.sh
-    ./setup.sh
-
-####API Reference: 
-
+##API Reference: 
+This file documents the functions created and used in the package. For a complete description of the algorithm see the "Getting to know the image-photo-z pipeline" document.  
 
 A. *catalog_gen* module: This module implements querying the SDSS SkyServer for a catalog of objects that image-photo-z may use.
 
@@ -202,25 +168,3 @@ C. *get_images* module: This module gets images from SDSS servers via Montage ut
           * 2MASS: j, h, k
           * DPOSS: f, j, n
           * DSS: DSS1, DSS1R, DSS1B, DSS2, DSS2B, DSS2R, DSS2IR
-
-
-####Getting the code working:
-The main script should do all the steps required for getting a pixel-level implementation of photometric redshift estimation running. 
-
-	python main.py
-
-The settings for the code may be done from the **config.cfg** file which is fairly self-explanatory. A different config file may be specified as follows:
-
-	python main.py <config-file.conf>
-
-Note that a config file must contain **all** the parameters in the sample config file to prevent _KeyError_ s.
-
-A note on getting the catalog: for now, use the script Query\_Area.sql in catalog\_gen/sql in CasJobs to get the catalog while the catalog_gen module is being fixed.
-
-
-####Miscellaneous Notes:  
-All code has been written and tested on Ubuntu 12.04 LTS.  
-
-####Contact:
-Alankar Kotwal  
-_alankarkotwal13@gmail.com_
