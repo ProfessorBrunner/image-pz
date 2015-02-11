@@ -3,6 +3,7 @@
 import numpy
 from astropy import wcs
 from astropy.io import fits 
+from astropy.coordinates.distances import spherical_to_cartesian
 import os
 import math
 import urllib
@@ -195,7 +196,11 @@ def generate_training_objects(objectsFileName, segImageName, catalog, imageFileN
 					trainingArray[0].append("Class")
 					trainingArray[0].append("PixelRA")
 					trainingArray[0].append("PixelDec")
-					trainingArray[0].append("DistanceFromCenter")
+					trainingArray[0].append("PixelX")
+					trainingArray[0].append("PixelY")
+					trainingArray[0].append("ObjectCenterX")
+					trainingArray[0].append("ObjectCenterY")
+					#trainingArray[0].append("DistanceFromCenter")
 					k=0
 					for j in errorFileNames:
 						fitsErrorFiles.append(fits.open(j))
@@ -209,9 +214,9 @@ def generate_training_objects(objectsFileName, segImageName, catalog, imageFileN
 							for l in fitsImages:
 								if math.isnan(float(l[k][j])):
 									isPixelValid=0
-							if isPixelValid==1:
-								if segImage[k][j]==thisObjFlag:
-									maxDist=max(maxDist, math.sqrt(pow((k-thisObjX),2)+pow((j-thisObjY),2)))
+							#if isPixelValid==1:
+							#	if segImage[k][j]==thisObjFlag:
+							#		maxDist=max(maxDist, math.sqrt(pow((k-thisObjX),2)+pow((j-thisObjY),2)))
 					
 					for j in range(max(0,int(i.split()[3])), min(int(i.split()[4]),segImage.shape[0]-1)):
 						for k in range(max(0,int(i.split()[5])), min(int(i.split()[6]),segImage.shape[1]-1)):
@@ -230,8 +235,12 @@ def generate_training_objects(objectsFileName, segImageName, catalog, imageFileN
 									pixelRA, pixelDec = w.wcs_pix2world(float(j), float(k), 1)
 									trainingVector.append(pixelRA)
 									trainingVector.append(pixelDec)
-									distance=math.sqrt(pow((k-thisObjX),2)+pow((j-thisObjY),2))/maxDist
-									trainingVector.append(distance)
+									trainingVector.append(float(j))
+									trainingVector.append(float(k))
+									trainingVector.append(thisObjX)
+									trainingVector.append(thisObjY)
+									#distance=math.sqrt(pow((k-thisObjX),2)+pow((j-thisObjY),2))#/maxDist
+									#trainingVector.append(distance)
 									for l in fitsErrors:
 										trainingVector.append(float(l[k][j]))
 									trainingArray.append(trainingVector)
@@ -259,11 +268,16 @@ def generate_training_objects(objectsFileName, segImageName, catalog, imageFileN
 		outlist.close()
 
 
-def generate_training_background(segImageNames, imageFileNames, outdir, nMaxDataPoints=1000):
+def generate_training_background(segImageNames, imageFileNames, errorFileNames, outdir, nMaxDataPoints=100):
 	
 	redshift=-1.0
 	redshiftError=0.0
 	objClass=4.0
+	ObjX=0.
+	ObjY=0.
+	
+	hdulist=fits.open(imageFileNames[0])
+	w = wcs.WCS(hdulist[0].header)
 	
 	fitsFiles=[]
 	fitsImages=[]
@@ -278,6 +292,9 @@ def generate_training_background(segImageNames, imageFileNames, outdir, nMaxData
 	
 	fitsFiles=[]
 	segImages=[]
+	fitsErrorFiles=[]
+	fitsErrors=[]
+	
 	k=0
 	for j in segImageNames:
 		fitsFiles.append(fits.open(j))
@@ -301,6 +318,17 @@ def generate_training_background(segImageNames, imageFileNames, outdir, nMaxData
 	trainingArray[0].append("Class")
 	trainingArray[0].append("PixelRA")
 	trainingArray[0].append("PixelDec")
+	trainingArray[0].append("PixelX")
+	trainingArray[0].append("PixelY")
+	trainingArray[0].append("ObjectCetnerX")
+	trainingArray[0].append("ObjectCetnerY")
+	
+	k=0
+	for j in errorFileNames:
+		fitsErrorFiles.append(fits.open(j))
+		fitsErrors.append(fitsErrorFiles[k][0].data)
+		trainingArray[0].append(j+"FluxError")
+		k=k+1
 	
 	nPixels=0
 	
@@ -325,6 +353,15 @@ def generate_training_background(segImageNames, imageFileNames, outdir, nMaxData
 						trainingVector.append(redshift)
 						trainingVector.append(redshiftError)	
 						trainingVector.append(objClass)
+						pixelRA, pixelDec = w.wcs_pix2world(float(i), float(j), 1)
+						trainingVector.append(pixelRA)
+						trainingVector.append(pixelDec)
+						trainingVector.append(float(i))
+						trainingVector.append(float(j))
+						trainingVector.append(ObjX)
+						trainingVector.append(ObjY)
+						for m in fitsErrors:
+							trainingVector.append(float(m[i][j]))
 						trainingArray.append(trainingVector)
 						nPixels=nPixels+1
 			else:
