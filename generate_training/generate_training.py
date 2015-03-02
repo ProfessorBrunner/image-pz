@@ -3,7 +3,6 @@
 import numpy
 from astropy import wcs
 from astropy.io import fits 
-from astropy.coordinates.distances import spherical_to_cartesian
 import os
 import math
 import urllib
@@ -268,7 +267,7 @@ def generate_training_objects(objectsFileName, segImageName, catalog, imageFileN
 		outlist.close()
 
 
-def generate_training_background(segImageNames, imageFileNames, errorFileNames, outdir, nMaxDataPoints=100):
+def generate_training_background(segImageNames, imageFileNames, errorFileNames, outdir, nMaxDataPoints=300):
 	
 	redshift=-1.0
 	redshiftError=0.0
