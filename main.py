@@ -140,9 +140,12 @@ try:
 				oneProcArg.append(oneProcOneArg)
 			argsList.append(oneProcArg)
 
-		commTrain=m.COMM_WORLD
-		ids=commTrain.scatter(argsList, root=0)
-		generate_training_data(ids)
+        try:
+            commTrain=m.COMM_WORLD
+            ids=commTrain.scatter(argsList, root=0)
+            generate_training_data(ids)
+        except:
+            generate_training_data(oneProcArg)
 
 		#**************************
 		# Training has ended here.*
