@@ -173,7 +173,7 @@ def generate_training_objects(objectsFileName, segImageName, catalog, imageFileN
 						objClass=3.0
 					segImageList=fits.open(segImageName)
 					segImage=segImageList[0].data
-					thisObjFlag=int(segImage[int(i.split()[2])][int(i.split()[1])])
+					thisObjFlag=int(segImage[int(i.split()[2])-1][int(i.split()[1])-1])
 					thisObjX=int(i.split()[2])
 					thisObjY=int(i.split()[1])
 					fitsFiles=[]
